@@ -97,8 +97,8 @@ bool Process_a_turn(char nums[],char input[]){
     
     string expression="";
 
-    //检查表达式是否合法
     //检查是否使用了给定的4个数字
+    if(!is_input_valid(nums,input)) return false;
 
     if(strcmp(input,noanswer)==0){ //没有答案的情况
         if(Calculate_math24(nums,expression,0)){
@@ -116,4 +116,43 @@ bool Process_a_turn(char nums[],char input[]){
         return true;
     }
     return false;
+}
+
+void Get_nums_(char nums[],char input[]){
+    int tmp[4]={0};
+    int i=0,j=0;
+    while(input[i]<'0'||input[i]>'9')   i++;
+    while(input[i]!='\0'){
+        if(input[i]<'0'||input[i]>'9') {
+            while(input[i]<'0'||input[i]>'9')
+                i++;
+            ++j;
+       }
+        tmp[j]=tmp[j]*10+input[i++]-'0';
+    }
+
+    for(int k=0;k<4;++k){
+        switch(tmp[k]){
+                case 10: nums[k]='0';break;
+                case 17:
+                case 49: nums[k]='1';break;
+                case 26:
+                case 58: nums[k]='J';break;
+                case 33:
+                case 65: nums[k]='Q';break;
+                case 27:
+                case 59: nums[k]='K';break;
+                default: nums[k]=tmp[k]+'0';
+        }
+    }
+}
+
+bool is_input_valid(char nums[],char input[]){
+    char input_num[4];
+    Get_nums_(input_num,input);
+    sort(nums,nums+4);
+    sort(input_num,input_num+4);
+    if(nums[0]!=input_num[0] ||nums[1]!=input_num[1] || nums[2]!=input_num[2] || nums[3]!=input_num[3] )
+        return false;
+    return true;
 }

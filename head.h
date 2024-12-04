@@ -29,3 +29,4 @@ bool Process_a_turn(char nums[],char input[]="No answers");
 string Convert_to_RPN(char input[]);
 char Get_next_sym(char input[],int &pos);
 bool Get_input(char input[],int time_limit=60);
+bool is_input_valid(char nums[],char input[]);
