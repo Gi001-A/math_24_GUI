@@ -9,6 +9,8 @@ int score[2]={0};       // score[0]-player0  score[1]-player1
 int current_player=0;
 int current_round=1;
 bool is_answer_correct=1;
+bool is_start=0;
+bool is_over=0;
 int round1=10,round_max=30;
 
 // 绘制文本的辅助函数
@@ -88,8 +90,12 @@ void keyboard(unsigned char key, int x, int y) {
         is_answer_correct=Process_a_turn(nums,input);
         if(is_answer_correct) 
             score[current_player]++;
-        //更新轮次
-        if(current_player) current_round++;
+        //更新轮次， 结束标志
+        if(current_player) {
+            if(current_round>=round1 && score[0]!=score[1]) is_over=1;
+            if(current_round==round_max) is_over=1;
+            current_round++;
+        }
         // 切换玩家
         current_player = (current_player == 1) ? 0 : 1;       
         // 生成新的数字
@@ -98,6 +104,7 @@ void keyboard(unsigned char key, int x, int y) {
         // 重置状态
         inputBuffer.clear();
         cursorPos = 0;
+        is_start=1;
     }
     else if (key == 8) {  // Backspace键
         if (cursorPos > 0) {
@@ -121,55 +128,74 @@ void display() {
     glColor3f(0.0f, 0.0f, 0.0f);
     drawText(-0.2f, 0.8f, "Math 24 game!");
 
-    //绘制提示字
-    drawText(-0.8f, 0.7f, "Round "+to_string(current_round));
-    if(current_player) drawText(-0.8f, 0.6f, "Player 2's turn:");
-    else drawText(-0.8f, 0.6f, "Player 1's turn:");
+    if(!is_over){
+        //绘制提示字
+        drawText(-0.8f, 0.7f, "Round "+to_string(current_round));
+        if(current_player) drawText(-0.8f, 0.6f, "Player 2's turn:");
+        else drawText(-0.8f, 0.6f, "Player 1's turn:");
 
-    // 绘制4张扑克牌
-    float cardX = -0.6f;
-    for (char num : nums) {
-        drawCard(cardX, 0.2f, num);
-        cardX += 0.4f;
-    }
+        // 绘制4张扑克牌
+        float cardX = -0.6f;
+        for (char num : nums) {
+            drawCard(cardX, 0.2f, num);
+            cardX += 0.4f;
+        }
 
-    //绘制提示字
-    drawText(-0.8f, -0.3f, "Please enter your answer:");
+        //绘制提示字
+        drawText(-0.8f, -0.3f, "Please enter your answer:");
 
-    // 绘制输入框
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glBegin(GL_QUADS);
-    glVertex2f(-0.8f, -0.6f);
-    glVertex2f(0.8f, -0.6f);
-    glVertex2f(0.8f, -0.4f);
-    glVertex2f(-0.8f, -0.4f);
-    glEnd();
+        // 绘制输入框
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glBegin(GL_QUADS);
+        glVertex2f(-0.8f, -0.6f);
+        glVertex2f(0.8f, -0.6f);
+        glVertex2f(0.8f, -0.4f);
+        glVertex2f(-0.8f, -0.4f);
+        glEnd();
 
-    // 绘制输入框边框
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glBegin(GL_LINE_LOOP);
-    glVertex2f(-0.8f, -0.6f);
-    glVertex2f(0.8f, -0.6f);
-    glVertex2f(0.8f, -0.4f);
-    glVertex2f(-0.8f, -0.4f);
-    glEnd();
+        // 绘制输入框边框
+        glColor3f(0.0f, 0.0f, 0.0f);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(-0.8f, -0.6f);
+        glVertex2f(0.8f, -0.6f);
+        glVertex2f(0.8f, -0.4f);
+        glVertex2f(-0.8f, -0.4f);
+        glEnd();
 
-    // 显示用户输入
-    glColor3f(0.0f, 0.0f, 0.0f);
-    drawText(-0.75f, -0.53f, inputBuffer.c_str());
+        // 显示用户输入
+        glColor3f(0.0f, 0.0f, 0.0f);
+        drawText(-0.75f, -0.53f, inputBuffer.c_str());
     
-    // 绘制光标
-    float cursorX = -0.75f + cursorPos * 0.03f;  // 根据字体大小调整
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glBegin(GL_LINES);
-    glVertex2f(cursorX, -0.55f);
-    glVertex2f(cursorX, -0.51f);
-    glEnd();
+        // 绘制光标
+        float cursorX = -0.75f + cursorPos * 0.03f;  // 根据字体大小调整
+        glColor3f(0.0f, 0.0f, 0.0f);
+        glBegin(GL_LINES);
+        glVertex2f(cursorX, -0.55f);
+        glVertex2f(cursorX, -0.51f);
+        glEnd();
 
-    //处理用户输入
-    if(is_answer_correct) 
-        drawText(-0.8f,-0.7f,"The answer is correct. You get one score!");
-    else drawText(-0.8f,-0.7f,"The answer is wrong.");
+        //处理用户输入
+        if(is_start){
+            if(is_answer_correct) drawText(-0.8f,-0.7f,"The answer is correct. You get one score!");
+            else drawText(-0.8f,-0.7f,"The answer is wrong.");
+        }
+    }
+    else {//游戏结束，展示结果
+        int winner=0;
+        if(score[0]>score[1]) winner=1;
+        else if(score[0]<score[1]) winner=2;
+        else winner=0;
+
+        if(winner){  //没有平局
+            drawText(-0.6f,0.6f,"After "+to_string(current_round-1)+" rounds, the game is over.");
+            drawText(-0.6f,0.4f,"The winner is Player "+to_string(winner)+"!");
+        }
+        else
+            drawText(-0.6f,0.5f,"The maximum number of rounds has been reached. It's a tie.");
+        
+        drawText(-0.6f,0.2f,"Player 1's total score: "+to_string(score[0]));
+        drawText(-0.6f,0.0f,"Player 2's total score: "+to_string(score[1]));     
+    }
 
     glutSwapBuffers();
 }
@@ -189,9 +215,8 @@ int main(int argc, char** argv) {
     glutInitWindowSize(800, 600);
     glutInitWindowPosition(100, 100);
     glutCreateWindow("24 Point Game");
-
     init();
-
+    Give_4_nums(nums);
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKeys);

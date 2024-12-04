@@ -3,7 +3,7 @@
 #include <cstring>
 #include <fstream>
 #include <cmath>
-#include <stack>
+#include <stack> 
 #include <ctime>
 #include <future>
 #include <chrono>
