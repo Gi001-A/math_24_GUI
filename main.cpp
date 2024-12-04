@@ -1,49 +1,62 @@
 #include <GL/freeglut.h>
-#include <string>
-#include <vector>
-#include <ctime>
+#include "head.h"
 
 // 全局变量
 std::string inputBuffer;  // 用户输入缓冲
-std::vector<int> cards{8, 3, 4, 6};  // 当前回合的扑克牌
+char nums[4]={'0','0','0','0'};  // 当前回合的扑克牌
 int cursorPos = 0;       // 光标位置
-bool isTimedOut = false;
-time_t startTime;
-const int TIME_LIMIT = 30; // 30秒限时
+int score[2]={0};       // score[0]-player0  score[1]-player1
+int current_player=0;
+int current_round=1;
+bool is_answer_correct=1;
+int round1=10,round_max=30;
 
 // 绘制文本的辅助函数
-void drawText(float x, float y, const char* text) {
+void drawText(float x, float y, string text) {
     glRasterPos2f(x, y);
-    for (const char* c = text; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+    for (int c=0; text[c] != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[c]);
     }
 }
 
 // 绘制扑克牌
-void drawCard(float x, float y, int number) {
+void drawCard(float x, float y, char num) {
     // 绘制白色矩形作为扑克牌背景
     glColor3f(1.0f, 1.0f, 1.0f);
     glBegin(GL_QUADS);
-    glVertex2f(x - 0.1f, y - 0.15f);
-    glVertex2f(x + 0.1f, y - 0.15f);
-    glVertex2f(x + 0.1f, y + 0.15f);
-    glVertex2f(x - 0.1f, y + 0.15f);
+    glVertex2f(x - 0.1f, y - 0.2f);
+    glVertex2f(x + 0.1f, y - 0.2f);
+    glVertex2f(x + 0.1f, y + 0.2f);
+    glVertex2f(x - 0.1f, y + 0.2f);
     glEnd();
 
     // 绘制黑色边框
     glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_LINE_LOOP);
-    glVertex2f(x - 0.1f, y - 0.15f);
-    glVertex2f(x + 0.1f, y - 0.15f);
-    glVertex2f(x + 0.1f, y + 0.15f);
-    glVertex2f(x - 0.1f, y + 0.15f);
+    glVertex2f(x - 0.1f, y - 0.2f);
+    glVertex2f(x + 0.1f, y - 0.2f);
+    glVertex2f(x + 0.1f, y + 0.2f);
+    glVertex2f(x - 0.1f, y + 0.2f);
     glEnd();
 
     // 绘制数字
     glColor3f(0.0f, 0.0f, 0.0f);
     char numStr[3];
-    sprintf(numStr, "%d", number);
-    drawText(x - 0.03f, y - 0.03f, numStr);
+    int number=Get_value(num);
+    switch(number) {
+        case 11:
+            drawText(x - 0.03f, y - 0.03f, "J");
+            break;
+        case 12:
+            drawText(x - 0.03f, y - 0.03f, "Q");
+            break;
+        case 13:
+            drawText(x - 0.03f, y - 0.03f, "K");
+            break;
+        default:
+            //sprintf(numStr, "%d", number);
+            drawText(x - 0.03f, y - 0.03f, to_string(number));
+    }
 }
 
 
@@ -68,19 +81,23 @@ void specialKeys(int key, int x, int y) {
 // 修改后的键盘回调函数
 void keyboard(unsigned char key, int x, int y) {
     if (key == 13) {  // Enter键
-        // 处理提交的答案
+        //处理提交的答案
         char input[100];
         strcpy(input, inputBuffer.c_str());
         
-        /*if(Process_a_turn(nums)) {  // 使用24点游戏的验证函数
-            // 处理正确答案
-        }*/
+        is_answer_correct=Process_a_turn(nums,input);
+        if(is_answer_correct) 
+            score[current_player]++;
+        //更新轮次
+        if(current_player) current_round++;
+        // 切换玩家
+        current_player = (current_player == 1) ? 0 : 1;       
+        // 生成新的数字
+        Give_4_nums(nums);
         
         // 重置状态
         inputBuffer.clear();
         cursorPos = 0;
-        isTimedOut = false;
-        startTime = time(nullptr);
     }
     else if (key == 8) {  // Backspace键
         if (cursorPos > 0) {
@@ -102,14 +119,22 @@ void display() {
     
     // 绘制标题
     glColor3f(0.0f, 0.0f, 0.0f);
-    drawText(-0.3f, 0.8f, "Math 24 game!");
+    drawText(-0.2f, 0.8f, "Math 24 game!");
+
+    //绘制提示字
+    drawText(-0.8f, 0.7f, "Round "+to_string(current_round));
+    if(current_player) drawText(-0.8f, 0.6f, "Player 2's turn:");
+    else drawText(-0.8f, 0.6f, "Player 1's turn:");
 
     // 绘制4张扑克牌
     float cardX = -0.6f;
-    for (int card : cards) {
-        drawCard(cardX, 0.2f, card);
+    for (char num : nums) {
+        drawCard(cardX, 0.2f, num);
         cardX += 0.4f;
     }
+
+    //绘制提示字
+    drawText(-0.8f, -0.3f, "Please enter your answer:");
 
     // 绘制输入框
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -120,7 +145,7 @@ void display() {
     glVertex2f(-0.8f, -0.4f);
     glEnd();
 
-    // 输入框边框
+    // 绘制输入框边框
     glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_LINE_LOOP);
     glVertex2f(-0.8f, -0.6f);
@@ -129,40 +154,26 @@ void display() {
     glVertex2f(-0.8f, -0.4f);
     glEnd();
 
-    // 显示剩余时间
-    time_t currentTime = time(nullptr);
-    int remainingTime = TIME_LIMIT - (currentTime - startTime);
-    if (remainingTime <= 0 && !isTimedOut) {
-        isTimedOut = true;
-        inputBuffer = "Time Out!";
-    }
-    
-    std::string timeStr = "Time: " + std::to_string(std::max(0, remainingTime)) + "s";
-    glColor3f(0.0f, 0.0f, 0.0f);
-    drawText(-0.75f, 0.7f, timeStr.c_str());
-
     // 显示用户输入
-    if(!isTimedOut){
-        glColor3f(0.0f, 0.0f, 0.0f);
-        drawText(-0.75f, -0.53f, inputBuffer.c_str());
+    glColor3f(0.0f, 0.0f, 0.0f);
+    drawText(-0.75f, -0.53f, inputBuffer.c_str());
     
-        // 绘制光标
-        float cursorX = -0.75f + cursorPos * 0.03f;  // 根据字体大小调整
-        glColor3f(0.0f, 0.0f, 0.0f);
-        glBegin(GL_LINES);
-        glVertex2f(cursorX, -0.55f);
-        glVertex2f(cursorX, -0.51f);
-        glEnd();
-    }
+    // 绘制光标
+    float cursorX = -0.75f + cursorPos * 0.03f;  // 根据字体大小调整
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_LINES);
+    glVertex2f(cursorX, -0.55f);
+    glVertex2f(cursorX, -0.51f);
+    glEnd();
+
+    //处理用户输入
+    if(is_answer_correct) 
+        drawText(-0.8f,-0.7f,"The answer is correct. You get one score!");
+    else drawText(-0.8f,-0.7f,"The answer is wrong.");
 
     glutSwapBuffers();
 }
 
-// 添加定时器回调函数
-void timer(int value) {
-    glutPostRedisplay();  // 触发重绘
-    glutTimerFunc(1000, timer, 0);  // 每秒更新一次
-}
 
 // 初始化OpenGL
 void init() {
@@ -184,7 +195,6 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKeys);
-    glutTimerFunc(0, timer, 0);  // 启动定时器
 
     glutMainLoop();
     return 0;
