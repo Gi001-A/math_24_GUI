@@ -98,7 +98,7 @@ bool Process_a_turn(char nums[],char input[]){
     string expression="";
 
     //检查是否使用了给定的4个数字
-    if(!is_input_valid(nums,input)) return false;
+    //if(!is_input_valid(nums,input)) return false;
 
     if(strcmp(input,noanswer)==0){ //没有答案的情况
         if(Calculate_math24(nums,expression,0)){

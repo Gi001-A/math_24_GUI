@@ -1,38 +1,39 @@
 #include "head.h"
 
-string getInputWithTimeout(int timeoutSeconds) {
-    promise<string> inputPromise;
-    future<string> inputFuture = inputPromise.get_future();
-
-    // 在一个新线程中获取用户输入
-    thread inputThread([&inputPromise]() {
-        string input;
-        getline(cin, input);
-        inputPromise.set_value(input);
-    });
-
-    // 等待输入或超时
-    future_status status = inputFuture.wait_for(chrono::seconds(timeoutSeconds));
-
-    if (status == future_status::ready) {
-        // 用户在规定时间内输入了
-        inputThread.join(); // 等待线程结束
-        return inputFuture.get();
+void timerFunc(int value) { //计时器
+    time_t current_time = time(nullptr);
+    if (difftime(current_time, start_time) > time_limit) {  // 超时处理        
+        resetRound();
+        is_time_up=1;
+        glutPostRedisplay();
     } else {
-        // 超时
-        inputThread.detach(); // 分离线程，让它自行结束
-        return ""; // 返回空字符串表示超时
+        // 继续设置下一个计时器
+        glutTimerFunc(1000, timerFunc, 0);
+        remaining_time = time_limit - static_cast<int>(difftime(current_time, start_time));        
+        glutPostRedisplay();
     }
 }
 
-bool Get_input(char input[],int time_limit) {
-    string userInput = getInputWithTimeout(30);
-    if (userInput.empty()) {
-        cout << "/nTime out!" << endl;
-        return false;
-    } 
-    else {
-        strcpy(input,userInput.data());
-        return true;
+void startGame() {
+    is_time_up=0;
+    start_time = time(nullptr); // 初始化第一回合的开始时间
+    glutTimerFunc(1000, timerFunc, 0); // 启动计时器
+}
+
+
+void resetRound() {
+    // 更新轮次，重置状态
+    if (current_player) {
+        if (current_round >= round1 && score[0] != score[1]) is_over = 1;
+        if (current_round == round_max) is_over = 1;
+        current_round++;
     }
+    current_player = (current_player == 1) ? 0 : 1;
+    Give_4_nums(nums);
+    inputBuffer.clear();
+    cursorPos = 0;
+    is_start = 1;
+    //重新计时
+    start_time = time(nullptr);   // 重新记录新回合的开始时间
+    glutTimerFunc(1000, timerFunc, 0);  // 注册新的计时器
 }
