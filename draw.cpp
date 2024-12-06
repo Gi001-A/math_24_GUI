@@ -57,6 +57,10 @@ void drawCard(float x, float y, char num) {
 // 显示回调函数
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
+
+    switch(currentMode){
+    case MODE_SELECT:drawModeSelection();break;
+    default:
     
     // 绘制标题
     glColor3f(0.0f, 0.0f, 0.0f);
@@ -133,6 +137,7 @@ void display() {
         
         drawText(-0.6f,0.2f,"Player 1's total score: "+to_string(score[0]));
         drawText(-0.6f,0.0f,"Player 2's total score: "+to_string(score[1]));     
+    }
     }
 
     glutSwapBuffers();

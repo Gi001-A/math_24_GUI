@@ -83,7 +83,6 @@ bool Calculate_math24(char nums[],string &save_exp,int output){
                         exp.append(1,ops[k]);
                         if(Verify(exp))  {
                             flag=1;
-                            //cout<<exp<<"     ";
                             if(output)  Show_expression(exp,save_exp);    
                             if(output!=2) return flag;                    
             }   }   }   }
@@ -115,4 +114,15 @@ bool Verify(string exp){
     num=operand.top();
     if(abs(num-24)<0.001) return true;
     else return false;
+}
+
+void Count_24(){   //包装好的mode1函数，直接调用即可
+    char input[100];
+    char nums[4];
+    cout<<"Please enter 4 numbers: ";
+    cin.getline(input,100);
+    string result="";
+
+    Get_nums(input,nums);
+    Calculate_math24(nums,result,1);
 }

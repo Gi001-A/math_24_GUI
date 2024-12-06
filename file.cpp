@@ -1,6 +1,12 @@
 #include "head.h"
 
-void Read_file(string inputfile,string outputfile){
+void Read_file(){ //包装好的mode2函数，可以直接调用
+    string inputfile,outputfile;
+    cout<<"Please give out the path of input file: ";
+    getline(cin,inputfile);
+    cout<<"Please give out the path of output file: ";
+    getline(cin,outputfile);
+
     ifstream inputFile;
     ofstream outputFile;
     inputFile.open(inputfile); 
