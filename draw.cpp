@@ -59,14 +59,21 @@ void display() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     switch(currentMode){
-    case MODE_SELECT:drawModeSelection();break;
-    default:
-    
+        case MODE_SELECT:   drawModeSelection();break;
+        case MODE_BATTLE:   drawBattle();break;
+        case MODE_VERIFY:   drawVerify();break;  // 还没实现
+        //default:            drawFile();break;    // 还没实现
+    }
+
+    glutSwapBuffers();
+}
+
+void drawBattle(){
     // 绘制标题
     glColor3f(0.0f, 0.0f, 0.0f);
     drawText(-0.2f, 0.8f, "Math 24 game!");
 
-    if(!is_over){
+    if(!is_over[2]){
         //绘制提示字
         drawText(-0.8f, 0.7f, "Round "+to_string(current_round));
         if(current_player) drawText(-0.8f, 0.6f, "Player 2's turn:");
@@ -115,7 +122,7 @@ void display() {
         drawCountdown();
 
         //处理用户输入
-        if(is_start){
+        if(is_start[2]){
             if(is_time_up)  drawText(-0.8f,-0.7f,"Time's up! Moving to next round...");
             else {
                 if(is_answer_correct) drawText(-0.8f,-0.7f,"The answer is correct. You get one score!");
@@ -138,8 +145,4 @@ void display() {
         drawText(-0.6f,0.2f,"Player 1's total score: "+to_string(score[0]));
         drawText(-0.6f,0.0f,"Player 2's total score: "+to_string(score[1]));     
     }
-    }
-
-    glutSwapBuffers();
 }
-

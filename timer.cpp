@@ -24,15 +24,15 @@ void startGame() {
 void resetRound() {
     // 更新轮次，重置状态
     if (current_player) {
-        if (current_round >= round1 && score[0] != score[1]) is_over = 1;
-        if (current_round == round_max) is_over = 1;
+        if (current_round >= round1 && score[0] != score[1]) is_over[2] = 1;
+        if (current_round == round_max) is_over[2] = 1;
         current_round++;
     }
     current_player = (current_player == 1) ? 0 : 1;
     Give_4_nums(nums);
     inputBuffer.clear();
     cursorPos = 0;
-    is_start = 1;
+    is_start[2] = 1;
     //重新计时
     start_time = time(nullptr);   // 重新记录新回合的开始时间
     glutTimerFunc(1000, timerFunc, 0);  // 注册新的计时器

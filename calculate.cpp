@@ -89,7 +89,7 @@ bool Calculate_math24(char nums[],string &save_exp,int output){
         } while (next_permutation(idx,idx+4));  
     } while (next_permutation(nums,nums+4));
 
-    if(!flag) cout<<"No anwers"<<endl;
+    if(!flag) save_exp="No anwers";
     return flag;
 }
 
@@ -116,13 +116,41 @@ bool Verify(string exp){
     else return false;
 }
 
-void Count_24(){   //包装好的mode1函数，直接调用即可
-    char input[100];
-    char nums[4];
-    cout<<"Please enter 4 numbers: ";
-    cin.getline(input,100);
-    string result="";
+void drawVerify(){     // mode 1 绘制函数
+    // 绘制标题
+    glColor3f(0.0f, 0.0f, 0.0f);
+    drawText(-0.4f,0.8f, "Mode 1: Calculate 24 with 4 numbers");
+    drawText(-0.8f,0.6f,"Please enter 4 numbers: ");
 
-    Get_nums(input,nums);
-    Calculate_math24(nums,result,1);
+    // 绘制输入框
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glBegin(GL_QUADS);
+    glVertex2f(-0.8f, 0.5f);
+    glVertex2f(0.8f, 0.5f);
+    glVertex2f(0.8f, 0.3f);
+    glVertex2f(-0.8f, 0.3f);
+    glEnd();
+
+    // 绘制输入框边框
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-0.8f, 0.5f);
+    glVertex2f(0.8f, 0.5f);
+    glVertex2f(0.8f, 0.3f);
+    glVertex2f(-0.8f, 0.3f);
+    glEnd();
+
+    // 显示用户输入
+    glColor3f(0.0f, 0.0f, 0.0f);
+    drawText(-0.75f, 0.37f, inputBuffer.c_str());
+    
+    // 绘制光标
+    float cursorX = -0.75f + cursorPos * 0.03f;  // 根据字体大小调整
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_LINES);
+    glVertex2f(cursorX, 0.34f);
+    glVertex2f(cursorX, 0.38f);
+    glEnd();
+
+    if(is_over[0])  drawText(-0.8f,-0.3f,mode1_answer);
 }
