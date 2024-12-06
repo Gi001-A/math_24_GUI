@@ -37,3 +37,9 @@ void resetRound() {
     start_time = time(nullptr);   // 重新记录新回合的开始时间
     glutTimerFunc(1000, timerFunc, 0);  // 注册新的计时器
 }
+
+void drawCountdown() {  //绘制倒计时
+    char buffer[50];
+    sprintf(buffer, "%d s left", remaining_time);
+    drawText(0.4f,-0.3f, buffer); 
+}
