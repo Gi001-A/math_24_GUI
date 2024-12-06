@@ -41,7 +41,12 @@ void keyboard(unsigned char key, int x, int y) {
                 cursorPos = 0;
                 break;
             }
-
+            case MODE_FILE:{
+                Read_file(inputBuffer+"file.txt",inputBuffer+"result.txt");
+                is_over[1]=1;                
+                inputBuffer.clear();
+                cursorPos = 0;
+            }
         }
         
         glutPostRedisplay();

@@ -62,7 +62,7 @@ void display() {
         case MODE_SELECT:   drawModeSelection();break;
         case MODE_BATTLE:   drawBattle();break;
         case MODE_VERIFY:   drawVerify();break;  // 还没实现
-        //default:            drawFile();break;    // 还没实现
+        default:            drawFile();break;    // 还没实现
     }
 
     glutSwapBuffers();

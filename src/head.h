@@ -41,7 +41,8 @@ void specialKeys(int key, int x, int y);
 void keyboard(unsigned char key, int x, int y); 
 void drawVerify();
 void drawBattle();
-void Read_file();
+void Read_file(string inputfile,string outputfile);
+void drawFile();
 
 
 

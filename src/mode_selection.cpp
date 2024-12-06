@@ -21,16 +21,16 @@ void drawButton(float x, float y, float width, float height, const char* text) {
 void drawModeSelection() {
     // 绘制标题
     glColor3f(0.0f, 0.0f, 0.0f);
-    const char* title = "24 Point Game - Select Mode";
+    const char* title = "Math 24 app - Select Mode";
     glRasterPos2f(-0.5f, 0.8f);
     for(const char* c = title; *c != '\0'; c++) {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
     }
 
     // 绘制三个模式按钮
-    drawButton(-0.6f, 0.3f, 1.2f, 0.2f, "Mode 1: Verify 24 Point");
-    drawButton(-0.6f, 0.0f, 1.2f, 0.2f, "Mode 2: File Processing");
-    drawButton(-0.6f, -0.3f, 1.2f, 0.2f, "Mode 3: Two Player Battle");
+    drawButton(-0.6f, 0.3f, 1.2f, 0.2f, "Mode 1: Calculate 24 with 4 numbers");
+    drawButton(-0.6f, 0.0f, 1.2f, 0.2f, "Mode 2: Process a file");
+    drawButton(-0.6f, -0.3f, 1.2f, 0.2f, "Mode 3: Play a game");
 }
 
 void mouseCallback(int button, int state, int x, int y) {

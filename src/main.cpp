@@ -14,9 +14,8 @@ bool is_over[3]={0};
 bool is_time_up=0;
 int round1=10,round_max=30;
 time_t start_time; // 记录输入开始的时间
-const int time_limit = 10;   //输入限时
-int remaining_time = 10; // 剩余时间（以秒为单位）
-
+const int time_limit = 30;   //输入限时
+int remaining_time = 30; // 剩余时间（以秒为单位）
 GameMode currentMode = MODE_SELECT;
 
 // 初始化OpenGL
@@ -37,7 +36,7 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialKeys);
-    glutMouseFunc(mouseCallback); // 添加鼠标回调函数
+    glutMouseFunc(mouseCallback); 
 
     glutMainLoop();
     return 0;
